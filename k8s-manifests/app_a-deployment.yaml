@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-a-deployment
+  namespace: my-apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-a
+  template:
+    metadata:
+      labels:
+        app: app-a
+    spec:
+      containers:
+        - name: app-a
+          image: saichandtcs/app_a:new
+          ports:
+            - containerPort: 5000
+          env:
+            - name: FLASK_APP
+              value: "app_a.py"
+

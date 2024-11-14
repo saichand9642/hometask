@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-b-deployment
+  namespace: my-apps
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-b
+  template:
+    metadata:
+      labels:
+        app: app-b
+    spec:
+      containers:
+        - name: app-b
+          image: saichandtcs/app_b:new
+          ports:
+            - containerPort: 5001
+
