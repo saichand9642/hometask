@@ -22,6 +22,12 @@ adapter = HTTPAdapter(max_retries=retry)
 session.mount('http://', adapter)
 
 
+# Add the root route for home page
+@application.route('/', methods=['GET'])
+def home():
+    return "Hello, World!"  # Response when accessing http://localhost:5000/
+
+
 @application.route('/hello', methods=['GET'])
 def hello():
     logging.info("Received request on /hello endpoint")

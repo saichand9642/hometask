@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: app-a-deployment
   namespace: my-apps
+  labels:
+    app: app-a
 spec:
   replicas: 1
   selector:
@@ -14,11 +16,12 @@ spec:
         app: app-a
     spec:
       containers:
-        - name: app-a
-          image: saichandtcs/app_a:new
-          ports:
-            - containerPort: 5000
-          env:
-            - name: FLASK_APP
-              value: "app_a.py"
+      - name: app-a
+        image: <your-docker-registry>/app-a:latest  # Use the latest tag
+        imagePullPolicy: Always  # Always pull the latest image
+        ports:
+        - containerPort: 5000
+        env:
+        - name: AUTH_SERVICE_URL
+          value: "http://app-b-service:5001/auth"  # Pointing to app-b for authentication
 
