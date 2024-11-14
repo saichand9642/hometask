@@ -1,0 +1,155 @@
+Checking if Minikube or Kubernetes is running...
+[0;32mKubernetes control plane[0m is running at [0;33mhttps://192.168.49.2:8443[0m
+[0;32mCoreDNS[0m is running at [0;33mhttps://192.168.49.2:8443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy[0m
+
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
+Building Docker image for app_a...
+Sending build context to Docker daemon  169.5kB
+Step 1/11 : FROM python:3.8-slim AS builder
+ ---> b5f62925bd0f
+Step 2/11 : WORKDIR /app
+ ---> Using cache
+ ---> 29c045502eb3
+Step 3/11 : COPY app_a/app_a.py app_a/requirements.txt ./
+ ---> Using cache
+ ---> c169bb06e73d
+Step 4/11 : RUN pip install --user -r requirements.txt
+ ---> Using cache
+ ---> 87303fd3adfd
+Step 5/11 : FROM python:3.8-slim
+ ---> b5f62925bd0f
+Step 6/11 : WORKDIR /app
+ ---> Using cache
+ ---> 29c045502eb3
+Step 7/11 : COPY --from=builder /root/.local /root/.local
+ ---> Using cache
+ ---> 2d8808b8ac8f
+Step 8/11 : ENV PATH=/root/.local/bin:$PATH
+ ---> Using cache
+ ---> cab8b21a3871
+Step 9/11 : COPY app_a/app_a.py .
+ ---> Using cache
+ ---> 55dde9f987fc
+Step 10/11 : EXPOSE 5000
+ ---> Using cache
+ ---> 6c180a21762f
+Step 11/11 : CMD ["python", "app_a.py"]
+ ---> Using cache
+ ---> 633e817e4bc1
+Successfully built 633e817e4bc1
+Successfully tagged saichandtcs/app_a:latest
+Building Docker image for app_b...
+Sending build context to Docker daemon  170.5kB
+Step 1/14 : FROM python:3.8-slim AS builder
+ ---> b5f62925bd0f
+Step 2/14 : WORKDIR /app
+ ---> Using cache
+ ---> 29c045502eb3
+Step 3/14 : COPY app_b/app_b.py app_b/requirements.txt ./
+ ---> Using cache
+ ---> a8835c1fbda7
+Step 4/14 : RUN pip install --user -r requirements.txt
+ ---> Using cache
+ ---> 1ebbf053ff4f
+Step 5/14 : FROM python:3.8-slim
+ ---> b5f62925bd0f
+Step 6/14 : WORKDIR /app
+ ---> Using cache
+ ---> 29c045502eb3
+Step 7/14 : RUN apt-get update && apt-get install -y sqlite3
+ ---> Using cache
+ ---> e235a5b59ecf
+Step 8/14 : COPY --from=builder /root/.local /root/.local
+ ---> Using cache
+ ---> 2babdd309d03
+Step 9/14 : ENV PATH=/root/.local/bin:$PATH
+ ---> Using cache
+ ---> b3ea1313fe84
+Step 10/14 : COPY app_b/app_b.py .
+ ---> Using cache
+ ---> b3220c67ead2
+Step 11/14 : COPY app_b/schema.sql /app/schema.sql
+ ---> Using cache
+ ---> aa95c4c395e9
+Step 12/14 : RUN mkdir -p /app/data &&     sqlite3 /app/data/database.db < schema.sql  # Initialize the database
+ ---> Using cache
+ ---> 01c7a67ed172
+Step 13/14 : EXPOSE 5001
+ ---> Using cache
+ ---> bed85504d506
+Step 14/14 : CMD ["python", "app_b.py"]
+ ---> Using cache
+ ---> 134b13370a37
+Successfully built 134b13370a37
+Successfully tagged saichandtcs/app_b:latest
+Pushing Docker image for app_a to Docker Hub...
+The push refers to repository [docker.io/saichandtcs/app_a]
+b7a3d13d1ba9: Preparing
+66509432b3c9: Preparing
+33c492bbd594: Preparing
+d2a2207b52a4: Preparing
+5d2d143f3d7f: Preparing
+c3772b569c3a: Preparing
+8d853c8add5d: Preparing
+c3772b569c3a: Waiting
+8d853c8add5d: Waiting
+33c492bbd594: Layer already exists
+5d2d143f3d7f: Layer already exists
+d2a2207b52a4: Layer already exists
+b7a3d13d1ba9: Layer already exists
+c3772b569c3a: Layer already exists
+8d853c8add5d: Layer already exists
+66509432b3c9: Layer already exists
+latest: digest: sha256:3776b280f13b04b33b1abeca92654a388dff70eba38b17ede3ab9ec43899cf54 size: 1785
+Pushing Docker image for app_b to Docker Hub...
+The push refers to repository [docker.io/saichandtcs/app_b]
+e4a0a048ee93: Preparing
+4a8a6b2281f9: Preparing
+1811f6e3cbf2: Preparing
+f8fe4107c939: Preparing
+645fe7e01d4e: Preparing
+33c492bbd594: Preparing
+d2a2207b52a4: Preparing
+5d2d143f3d7f: Preparing
+c3772b569c3a: Preparing
+8d853c8add5d: Preparing
+33c492bbd594: Waiting
+d2a2207b52a4: Waiting
+5d2d143f3d7f: Waiting
+c3772b569c3a: Waiting
+8d853c8add5d: Waiting
+645fe7e01d4e: Layer already exists
+1811f6e3cbf2: Layer already exists
+e4a0a048ee93: Layer already exists
+4a8a6b2281f9: Layer already exists
+f8fe4107c939: Layer already exists
+d2a2207b52a4: Layer already exists
+c3772b569c3a: Layer already exists
+5d2d143f3d7f: Layer already exists
+8d853c8add5d: Layer already exists
+33c492bbd594: Layer already exists
+latest: digest: sha256:2e6ee623c91602c6f6210f45ad9d08f9992cb9f5afc493004d0a36872a44dcd7 size: 2410
+NAME      STATUS   AGE
+my-apps   Active   9h
+Deleting old deployments and services for app_a and app_b...
+deployment.apps "app-a-deployment" deleted
+service "app-a-service" deleted
+deployment.apps "app-b-deployment" deleted
+service "app-b-service" deleted
+Creating namespace
+namespace/my-apps unchanged
+Applying Kubernetes manifests for app_a...
+deployment.apps/app-a-deployment created
+service/app-a-service created
+Applying Kubernetes manifests for app_b...
+deployment.apps/app-b-deployment created
+service/app-b-service created
+Deployment completed for app_a and app_b!
+Verifying the deployment...
+NAME                                READY   STATUS              RESTARTS   AGE
+app-a-deployment-7f7c8c67cc-tsvwj   0/1     ContainerCreating   0          2s
+app-b-deployment-678f8f5d4c-f26mw   0/1     ContainerCreating   0          1s
+NAME            TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
+app-a-service   ClusterIP   10.102.184.77   <none>        5000/TCP   2s
+app-b-service   ClusterIP   10.96.14.40     <none>        5001/TCP   1s
+Deployment process completed successfully!
