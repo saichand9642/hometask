@@ -1,4 +1,4 @@
-Here’s the complete `README.md` with setup instructions formatted in a single code block:
+Here’s the complete `README.md` with complete setup instructions:
 
 ```markdown
 # Project Setup
@@ -81,70 +81,96 @@ This will create a local Kubernetes cluster running on your machine. Once Miniku
 
 ## Setup Instructions
 
-### 1. Build Docker Images
-To build the Docker images for both applications, navigate to their respective directories and run:
+### 1. Build and Push Docker Images
+
+Navigate to the project root directory and build Docker images for `app-a` and `app-b`.
 
 ```bash
-# Build Docker image for app_a
-docker build -t app_a ./app_a
+# Build Docker image for app-a
+docker build -f app_a/Dockerfile -t saichandtcs/app-a:latest ./app_a
 
-# Build Docker image for app_b
-docker build -t app_b ./app_b
+# Build Docker image for app-b
+docker build -f app_b/Dockerfile -t saichandtcs/app-b:latest ./app_b
+```
+
+Push the images to your container registry:
+
+```bash
+# Push app-a to Docker Hub
+docker push saichandtcs/app-a:latest
+
+# Push app-b to Docker Hub
+docker push saichandtcs/app-b:latest
 ```
 
 ### 2. Deploy to Kubernetes
 After ensuring your Kubernetes cluster is set up, you can deploy the applications using the following steps.
 
-#### Apply Kubernetes Manifests
+#### Create a Namespace
 
-##### Namespace Setup
-First, create a namespace for the applications to run in:
+To isolate the applications, create a namespace named `my-apps`:
 
 ```bash
 kubectl apply -f k8s-manifests/namespace.yaml
 ```
 
-##### Deploy app_a
-Apply the deployment and service configurations for `app_a`:
+#### Deploy `app-a`
+
+Apply the deployment and service configurations for `app-a`:
 
 ```bash
-kubectl apply -f k8s-manifests/app_a-deployment.yaml
-kubectl apply -f k8s-manifests/app_a-service.yaml
+kubectl apply -f k8s-manifests/app-a-deployment.yaml -n my-apps
+kubectl apply -f k8s-manifests/app-a-service.yaml -n my-apps
 ```
 
-##### Deploy app_b
-Similarly, apply the deployment and service configurations for `app_b`:
+#### Deploy `app-b`
+
+Apply the deployment and service configurations for `app-b`:
 
 ```bash
-kubectl apply -f k8s-manifests/app_b-deployment.yaml
-kubectl apply -f k8s-manifests/app_b-service.yaml
+kubectl apply -f k8s-manifests/app-b-deployment.yaml -n my-apps
+kubectl apply -f k8s-manifests/app-b-service.yaml -n my-apps
 ```
 
-### 3. Verify Deployments
-After the deployments, check if the applications are successfully running by listing the pods:
+---
+
+## Verification Steps
+
+### 1. Check Pods
+
+Ensure all pods are running successfully in the `my-apps` namespace:
 
 ```bash
-kubectl get pods
+kubectl get pods -n my-apps
 ```
 
-To confirm that the services are running properly, you can get the list of services:
+You should see pods for both `app-a` and `app-b` in the **Running** state.
+
+### 2. Check Services
+
+Verify that the services are created successfully:
 
 ```bash
-kubectl get svc
+kubectl get services -n my-apps
 ```
 
-### 4. Access the Applications
-To access the applications locally (if using Minikube), run the following commands:
+Note the ClusterIP or NodePort of the services.
+
+### 3. Access the Applications
+
+If using **Minikube**, access the applications using the following commands:
 
 ```bash
-# Access app_a via the Minikube service
-minikube service app_a-service
+# Access app-a
+minikube service app-a-service -n my-apps
 
-# Access app_b via the Minikube service
-minikube service app_b-service
+# Access app-b
+minikube service app-b-service -n my-apps
 ```
 
-This will open the applications in your browser.
+These commands will open the applications in your default web browser.
+
+---
 
 ## Continuous Deployment
 
@@ -154,24 +180,26 @@ For continuous deployment, you can use `deploy.sh`, a script for automating depl
 The `deploy.sh` script automates the process of building Docker images, pushing them to a registry, and applying Kubernetes manifests to deploy the applications.
 
 ```bash
+
 #!/bin/bash
 
 # Build Docker images
-docker build -t app_a ./app_a
-docker build -t app_b ./app_b
+docker build -f app_a/Dockerfile -t saichandtcs/app-a:latest ./app_a
+docker build -f app_b/Dockerfile -t saichandtcs/app-b:latest ./app_b
 
 # Push Docker images to your container registry
-docker push app_a
-docker push app_b
+docker push saichandtcs/app-a:latest
+docker push saichandtcs/app-b:latest
 
 # Apply Kubernetes manifests for deployment
 kubectl apply -f k8s-manifests/namespace.yaml
-kubectl apply -f k8s-manifests/app_a-deployment.yaml
-kubectl apply -f k8s-manifests/app_a-service.yaml
-kubectl apply -f k8s-manifests/app_b-deployment.yaml
-kubectl apply -f k8s-manifests/app_b-service.yaml
+kubectl apply -f k8s-manifests/app-a-deployment.yaml -n my-apps
+kubectl apply -f k8s-manifests/app-a-service.yaml -n my-apps
+kubectl apply -f k8s-manifests/app-b-deployment.yaml -n my-apps
+kubectl apply -f k8s-manifests/app-b-service.yaml -n my-apps
 
 echo "Deployment Complete!"
+
 ```
 
 Run the script:
