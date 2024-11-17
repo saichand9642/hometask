@@ -211,25 +211,6 @@ chmod +x deploy.sh
 
 This script automates the process of building the Docker images, pushing them to a registry, and applying the Kubernetes manifests to deploy the applications.
 
-## CD_Plan.txt
-
-### Continuous Delivery Plan
-
-In this project, we follow a continuous delivery approach to streamline the deployment process. The workflow involves:
-
-1. **Docker Build**: Each application is containerized using Docker, which allows for easy scaling and management in Kubernetes.
-2. **Push to Registry**: Docker images are pushed to a container registry (e.g., Docker Hub, AWS ECR) to make them available for deployment in different environments.
-3. **Kubernetes Deployment**: Kubernetes YAML manifests define the deployment and service configurations for each application, allowing for automated scaling, updates, and management.
-4. **CI/CD Integration**: The `deploy.sh` script can be integrated into a CI/CD pipeline to automate the entire process of building, testing, and deploying the applications.
-
-### Tools and Rationale
-
-- **Docker**: Provides an efficient and portable way to containerize applications.
-- **Kubernetes**: Offers a powerful orchestration platform for managing and scaling containerized applications.
-- **kubectl**: Allows us to interact with the Kubernetes cluster for managing deployments, services, and resources.
-- **Minikube**: Used for local Kubernetes development and testing.
-- **deploy.sh**: Simplifies the deployment process by automating Docker image builds, pushing to the registry, and applying Kubernetes manifests.
-
 ## Conclusion
 
 By following the steps above, you will have a fully functioning setup of `app_a` and `app_b` running on Kubernetes, either locally using Minikube or on a remote cluster. This setup ensures that your deployments are repeatable and easily managed using Kubernetes.
